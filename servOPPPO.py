@@ -17,14 +17,11 @@ print('connected: ', addr)
 #устанавливаем связь с клиентом и общяемся с ним
 while True:
     data = conn.recv(1024)
-    if not data:
-        break
+    #if not data:
+    #    break
     print(bytes.decode(data, encoding='utf-8'))
     conn.send(data.upper())
 
 conn.close()
-
-
-
 
 print("сервер остановлен")
