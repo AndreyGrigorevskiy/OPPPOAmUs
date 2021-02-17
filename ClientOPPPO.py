@@ -7,11 +7,15 @@ import string
 
 sock = socket.socket()
 sock.connect(('localhost', 9090))
-i = 0
-while i<10:
+action = True
+while action:
     sock.send(input().encode('utf-8'))
     data = sock.recv(1024)
     print(data)
-    i += 1
+    print('continue typing ?(Y\N)')
+    x = input()
+    if x == 'N' or x == 'n':
+        break
+
 
 sock.close()
