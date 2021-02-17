@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#
+#1
+#2
+#3
+#4
+#5
 
 import socket #библиотека сокета
 import string #библиотека строк
