@@ -1,23 +1,49 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import socket, threading, time
 
+key = 8194
 
-import socket
-import string
+shutdown = False
+join = False
 
-sock = socket.socket()
-sock.connect(('localhost', 9090))
-action = True
-print("to exit write to chat: /exit")
-while action:
-    message = input()
-    if not message:
-        message = " you are gay"
-    if message == "/exit":
-        break;
-    message = message.encode('utf-8')
-    sock.send(message)
-    data = sock.recv(1024)
-    print(data)
+def receving (name, sock):
+	while not shutdown:
+		try:
+			while True:
+				data, addr = sock.recvfrom(1024)
+				print(data.decode("utf-8"))
 
-sock.close()
+				time.sleep(0.2)
+		except:
+			pass
+host = socket.gethostbyname(socket.gethostname())
+port = 0
+
+server = ("192.168.137.226",9090)
+
+s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+s.bind((host,port))
+s.setblocking(0)
+
+alias = input("Name: ")
+
+rT = threading.Thread(target = receving, args = ("RecvThread",s))
+rT.start()
+
+while shutdown == False:
+	if join == False:
+		s.sendto(("["+alias + "] => join chat ").encode("utf-8"),server)
+		join = True
+	else:
+		try:
+			message = input()
+
+			if message != "":
+				s.sendto(("["+alias + "] :: "+message).encode("utf-8"),server)
+
+			time.sleep(0.2)
+		except:
+			s.sendto(("["+alias + "] <= left chat ").encode("utf-8"),server)
+			shutdown = True
+
+rT.join()
+s.close()

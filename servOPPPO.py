@@ -1,27 +1,33 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import socket, time
 
-import socket #библиотека сокета
-import string #библиотека строк
+host = socket.gethostbyname(socket.gethostname())
+port = 9090
 
-print("сервер запущен")
+clients = []
 
-sock = socket.socket() #создаем сокет
-sock.bind(('',9090)) #инициализируем порт
-sock.listen(1) #слушаем 1 это максимальное количество подключений
-conn, addr = sock.accept() #принримает подключение и выозвращяет новый сокет и адрес клиента
+s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+s.bind((host,port))
 
-print('connected: ', addr)
+quit = False
+print("[ Server Started ]")
 
+while not quit:
+	try:
+		data, addr = s.recvfrom(1024)
 
-#устанавливаем связь с клиентом и общяемся с ним
-while True:
-    data = conn.recv(1024)
-    if not data:
-        break
-    print(bytes.decode(data, encoding='utf-8'))
-    conn.send(data.upper())
+		if addr not in clients:
+			clients.append(addr)
 
-conn.close()
+		itsatime = time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime())
 
-print("сервер остановлен")
+		print("["+addr[0]+"]=["+str(addr[1])+"]=["+itsatime+"]/",end="")
+		print(data.decode("utf-8"))
+
+		for client in clients:
+			if addr != client:
+				s.sendto(data,client)
+	except:
+		print("\n[ Server Stopped ]")
+		quit = True
+
+s.close()
